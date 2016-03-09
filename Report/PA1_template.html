@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Reproducible Reseach: Peer Assessment</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h2>Reproducible Reseach: Peer Assessment</h2>
+
+<p>This is the report for the Assignment corresponding to the Course Reproducible Research in Coursera.</p>
+
+<p>** Some of the functions used in this code needs the next packages:</p>
+
+<ul>
+<li>plyr</li>
+<li>dplyr</li>
+<li>ggplot2</li>
+</ul>
+
+<h3>Loading and preprocessing the data</h3>
+
+<p>To load the data, the file &ldquo;activity.csv&rdquo; must be cointained in your session or working directory.
+Then, simply execute the code:</p>
+
+<p>data &lt;- read.csv(&ldquo;activity.csv&rdquo;)</p>
+
+<p>Activities dataset will be stored in &ldquo;data&rdquo;.</p>
+
+<h3>What is mean total number of steps taken per day?</h3>
+
+<p>To calculate the total number of steps taken per day the next code was performed:</p>
+
+<p>stepsByDay &lt;- with(data, aggregate(steps, by = list(date), FUN = sum))</p>
+
+<p>png(filename = &ldquo;plot1.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)</p>
+
+<p>barplot(stepsByDay$x, xlab = &ldquo;Day&rdquo;, ylab = &ldquo;Total Steps&rdquo;, main = &ldquo;Number of steps taken each day&rdquo;)</p>
+
+<p>dev.off()</p>
+
+<p>summary(stepsByDay$x)[4]</p>
+
+<p>summary(stepsByDay$x)[3]</p>
+
+<p>First row assigns to the variable &ldquo;stepsByDay&rdquo; the sum of the steps taken for each day.
+Second row represents graphically the more frequent number of steps.
+Third and fourth row displays the mean and the median respectively which takes for this example:</p>
+
+<ul>
+<li>Mean = 10770</li>
+<li>Median = 10760</li>
+</ul>
+
+<h3>What is the average daily activity pattern?</h3>
+
+<p>The average daily activity pattern is assessed through next code:</p>
+
+<p>AvStepsByDay &lt;- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))</p>
+
+<p>png(filename = &ldquo;plot2.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)</p>
+
+<p>plot(AvStepsByDay$Group.1, AvStepsByDay$x, type = &ldquo;l&rdquo;, xlab = &ldquo;Interval&rdquo;, ylab = &ldquo;Average Steps&rdquo;, main = &ldquo;Average steps pattern&rdquo;)</p>
+
+<p>dev.off()</p>
+
+<p>AvStepsByDay$Group.1[AvStepsByDay$x == max(AvStepsByDay$x)]</p>
+
+<p>First row makes the average of each interval through the days.
+The second one plots graphically the average through the five minutes interval.
+Last row calculates the interval where the number of steps is maximum, which in this case is:</p>
+
+<ul>
+<li>Max Interval = 835</li>
+</ul>
+
+<h3>Imputing missing values</h3>
+
+<p>There are some missing values at the Steps variable, its name is given by:</p>
+
+<p>sum(is.na(data$steps))</p>
+
+<ul>
+<li>NA = 2304</li>
+</ul>
+
+<p>To remove missing values, an average of the steps through all days is calculated.
+This vector called &ldquo;MeanStepsByDay&rdquo; is assign to the days where data is missing.
+The code to assign the missing values is the next one:</p>
+
+<p>MeanStepsByDay &lt;- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))</p>
+
+<p>vect &lt;- is.na(data$steps)</p>
+
+<p>vect2 &lt;- rep(MeanStepsByDay$x, length(vect)/length(MeanStepsByDay$x))</p>
+
+<p>newData &lt;- cbind(vect2, vect)</p>
+
+<p>newData &lt;- cbind(data, newData)</p>
+
+<p>newData$steps[is.na(newData$steps)] &lt;- 0</p>
+
+<p>newData &lt;- mutate(newData, steps = vect2*vect + steps)</p>
+
+<p>newData &lt;- newData[c(&ldquo;steps&rdquo;, &ldquo;date&rdquo;, &ldquo;interval&rdquo;)]</p>
+
+<p>newStepsByDay &lt;- with(newData, aggregate(steps, by = list(date), FUN = sum))</p>
+
+<p>png(filename = &ldquo;plot3.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)</p>
+
+<p>barplot(newStepsByDay$x, xlab = &ldquo;Day&rdquo;, ylab = &ldquo;Total Steps&rdquo;, main = &ldquo;Number of steps taken each day&rdquo;)</p>
+
+<p>dev.off()</p>
+
+<p>Last rows in the code creates a a histogram of the total number of steps taken each day.</p>
+
+<p>To asses the mean and the median of the new dataset, it is used:</p>
+
+<ul>
+<li>summary(newStepsByDay$x)[4] -&gt; Mean = 10770</li>
+<li>summary(newStepsByDay$x)[3] -&gt; Median = 10770</li>
+</ul>
+
+<p>Imputing missing values increases the Median but not the Mean in less than 0.1%.</p>
+
+<h3>Are there differences in activity patterns between weekdays and weekends?</h3>
+
+<p>To describe the difference between &ldquo;weekdays&rdquo; and &ldquo;weekends&rdquo; a factor variable was created and &ldquo;ggplot2&rdquo; package was used.
+The code implemented is shown now:</p>
+
+<p>factVar &lt;- as.POSIXlt(as.Date(newData$date))$wday</p>
+
+<p>factVar[factVar&gt;0 &amp; factVar&lt;6] &lt;- &ldquo;weekday&rdquo;</p>
+
+<p>factVar[factVar != &ldquo;weekday&rdquo;] &lt;- &ldquo;weekend&rdquo;</p>
+
+<p>factVar &lt;- as.factor(factVar)</p>
+
+<p>newData2 &lt;- cbind(newData, factVar)</p>
+
+<p>newData2 &lt;- group_by(newData2, factVar, interval)</p>
+
+<p>results &lt;- summarise(newData2, step = mean(steps))</p>
+
+<p>p &lt;- qplot(interval, step, data = results, facets = factVar~., geom = &ldquo;line&rdquo;, main = &ldquo;Average number of steps taken for week and weekend&rdquo;)</p>
+
+<p>png(filename = &ldquo;plot4.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)</p>
+
+<p>plot(p)</p>
+
+<p>dev.off()</p>
+
+<p>First paragraph converts dates in the dataset to a factor whose levels are &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo;.
+Second paragraph just assess the mean for the steps attending to the &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo; factors.
+Last rows displays the results for the mean on &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo;.</p>
+
+<h2>Code Script</h2>
+
+<h1>Assignment 1</h1>
+
+<p>library(plyr)
+library(dplyr)
+library(ggplot2)
+data &lt;- read.csv(&ldquo;activity.csv&rdquo;)</p>
+
+<h1>What is mean total number of steps taken per day?</h1>
+
+<p>stepsByDay &lt;- with(data, aggregate(steps, by = list(date), FUN = sum))
+png(filename = &ldquo;plot1.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)
+barplot(stepsByDay$x, xlab = &ldquo;Day&rdquo;, ylab = &ldquo;Total Steps&rdquo;, main = &ldquo;Number of steps taken each day&rdquo;)
+dev.off()
+summary(stepsByDay$x)[4]
+summary(stepsByDay$x)[3]</p>
+
+<h1>R: mean = 10770, median = 10760</h1>
+
+<h1>What is the average daily activity pattern?</h1>
+
+<p>AvStepsByDay &lt;- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))
+png(filename = &ldquo;plot2.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)
+plot(AvStepsByDay$Group.1, AvStepsByDay$x, type = &ldquo;l&rdquo;, xlab = &ldquo;Interval&rdquo;, ylab = &ldquo;Average Steps&rdquo;, main = &ldquo;Average steps pattern&rdquo;)
+dev.off()
+AvStepsByDay$Group.1[AvStepsByDay$x == max(AvStepsByDay$x)]</p>
+
+<h1>R: In interval 835 is where the maximum average number of steps is reached</h1>
+
+<h1>Imputing missing values</h1>
+
+<p>sum(is.na(data$steps))
+MeanStepsByDay &lt;- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))
+vect &lt;- is.na(data$steps)
+vect2 &lt;- rep(MeanStepsByDay$x, length(vect)/length(MeanStepsByDay$x))
+newData &lt;- cbind(vect2, vect)
+newData &lt;- cbind(data, newData)
+newData$steps[is.na(newData$steps)] &lt;- 0
+newData &lt;- mutate(newData, steps = vect2*vect + steps)
+newData &lt;- newData[c(&ldquo;steps&rdquo;, &ldquo;date&rdquo;, &ldquo;interval&rdquo;)]
+newStepsByDay &lt;- with(newData, aggregate(steps, by = list(date), FUN = sum))
+png(filename = &ldquo;plot3.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)
+barplot(newStepsByDay$x, xlab = &ldquo;Day&rdquo;, ylab = &ldquo;Total Steps&rdquo;, main = &ldquo;Number of steps taken each day&rdquo;)
+dev.off()
+summary(newStepsByDay$x)[4]
+summary(newStepsByDay$x)[3]</p>
+
+<h1>R: Missing values 2304. mean = 10770, median = 10770. Imputing missing data influenced on the median value</h1>
+
+<h1>Are there differences in activity patterns between weekdays and weekends?</h1>
+
+<p>factVar &lt;- as.POSIXlt(as.Date(newData$date))$wday
+factVar[factVar&gt;0 &amp; factVar&lt;6] &lt;- &ldquo;weekday&rdquo;
+factVar[factVar != &ldquo;weekday&rdquo;] &lt;- &ldquo;weekend&rdquo;
+factVar &lt;- as.factor(factVar)</p>
+
+<p>newData2 &lt;- cbind(newData, factVar)
+newData2 &lt;- group_by(newData2, factVar, interval)
+results &lt;- summarise(newData2, step = mean(steps))</p>
+
+<p>p &lt;- qplot(interval, step, data = results, facets = factVar~., geom = &ldquo;line&rdquo;, main = &ldquo;Average number of steps taken for week and weekend&rdquo;)
+png(filename = &ldquo;plot4.png&rdquo;,
+    width = 480, height = 480, units = &ldquo;px&rdquo;)
+plot(p)
+dev.off()</p>
+
+<p>library(knitr)
+knit2html(&ldquo;PA1_template.Rmd&rdquo;)</p>
+
+</body>
+
+</html>

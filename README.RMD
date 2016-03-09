@@ -1,0 +1,11 @@
+# Peer Assigment 1: Reproducible Research
+
+Please go through the folders and the code to assess the assignment.
+
+This repository contains:
+
+* "Code.R" -> Script in R to perform the study.
+* "activity.csv" -> File containing dataset.
+* "Reports" -> Folder with the reports explaining all the questions and the results.
+* "Graphs" -> Plots required in the assignment.
+

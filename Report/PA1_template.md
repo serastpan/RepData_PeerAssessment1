@@ -1,0 +1,198 @@
+## Reproducible Reseach: Peer Assessment
+
+This is the report for the Assignment corresponding to the Course Reproducible Research in Coursera.
+
+** Some of the functions used in this code needs the next packages:
+* plyr
+* dplyr
+* ggplot2
+
+### Loading and preprocessing the data
+To load the data, the file "activity.csv" must be cointained in your session or working directory.
+Then, simply execute the code:
+
+data <- read.csv("activity.csv")
+
+Activities dataset will be stored in "data".
+
+### What is mean total number of steps taken per day?
+To calculate the total number of steps taken per day the next code was performed:
+
+stepsByDay <- with(data, aggregate(steps, by = list(date), FUN = sum))
+
+png(filename = "plot1.png",
+    width = 480, height = 480, units = "px")
+
+barplot(stepsByDay$x, xlab = "Day", ylab = "Total Steps", main = "Number of steps taken each day")
+
+dev.off()
+
+summary(stepsByDay$x)[4]
+
+summary(stepsByDay$x)[3]
+
+First row assigns to the variable "stepsByDay" the sum of the steps taken for each day.
+Second row represents graphically the more frequent number of steps.
+Third and fourth row displays the mean and the median respectively which takes for this example:
+* Mean = 10770
+* Median = 10760
+
+### What is the average daily activity pattern?
+The average daily activity pattern is assessed through next code:
+
+AvStepsByDay <- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))
+
+png(filename = "plot2.png",
+    width = 480, height = 480, units = "px")
+
+plot(AvStepsByDay$Group.1, AvStepsByDay$x, type = "l", xlab = "Interval", ylab = "Average Steps", main = "Average steps pattern")
+
+dev.off()
+
+AvStepsByDay$Group.1[AvStepsByDay$x == max(AvStepsByDay$x)]
+
+First row makes the average of each interval through the days.
+The second one plots graphically the average through the five minutes interval.
+Last row calculates the interval where the number of steps is maximum, which in this case is:
+* Max Interval = 835
+
+### Imputing missing values
+There are some missing values at the Steps variable, its name is given by:
+
+sum(is.na(data$steps))
+
+* NA = 2304
+
+To remove missing values, an average of the steps through all days is calculated.
+This vector called "MeanStepsByDay" is assign to the days where data is missing.
+The code to assign the missing values is the next one:
+
+MeanStepsByDay <- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))
+
+vect <- is.na(data$steps)
+
+vect2 <- rep(MeanStepsByDay$x, length(vect)/length(MeanStepsByDay$x))
+
+newData <- cbind(vect2, vect)
+
+newData <- cbind(data, newData)
+
+newData$steps[is.na(newData$steps)] <- 0
+
+newData <- mutate(newData, steps = vect2*vect + steps)
+
+newData <- newData[c("steps", "date", "interval")]
+
+newStepsByDay <- with(newData, aggregate(steps, by = list(date), FUN = sum))
+
+png(filename = "plot3.png",
+    width = 480, height = 480, units = "px")
+
+barplot(newStepsByDay$x, xlab = "Day", ylab = "Total Steps", main = "Number of steps taken each day")
+
+dev.off()
+
+Last rows in the code creates a a histogram of the total number of steps taken each day.
+
+To asses the mean and the median of the new dataset, it is used:
+* summary(newStepsByDay$x)[4] -> Mean = 10770
+* summary(newStepsByDay$x)[3] -> Median = 10770
+
+Imputing missing values increases the Median but not the Mean in less than 0.1%.
+
+### Are there differences in activity patterns between weekdays and weekends?
+
+To describe the difference between "weekdays" and "weekends" a factor variable was created and "ggplot2" package was used.
+The code implemented is shown now:
+
+factVar <- as.POSIXlt(as.Date(newData$date))$wday
+
+factVar[factVar>0 & factVar<6] <- "weekday"
+
+factVar[factVar != "weekday"] <- "weekend"
+
+factVar <- as.factor(factVar)
+
+newData2 <- cbind(newData, factVar)
+
+newData2 <- group_by(newData2, factVar, interval)
+
+results <- summarise(newData2, step = mean(steps))
+
+p <- qplot(interval, step, data = results, facets = factVar~., geom = "line", main = "Average number of steps taken for week and weekend")
+
+png(filename = "plot4.png",
+    width = 480, height = 480, units = "px")
+
+plot(p)
+
+dev.off()
+
+First paragraph converts dates in the dataset to a factor whose levels are "weekday" and "weekend".
+Second paragraph just assess the mean for the steps attending to the "weekday" and "weekend" factors.
+Last rows displays the results for the mean on "weekday" and "weekend".
+
+## Code Script
+
+# Assignment 1
+library(plyr)
+library(dplyr)
+library(ggplot2)
+data <- read.csv("activity.csv")
+
+# What is mean total number of steps taken per day?
+stepsByDay <- with(data, aggregate(steps, by = list(date), FUN = sum))
+png(filename = "plot1.png",
+    width = 480, height = 480, units = "px")
+barplot(stepsByDay$x, xlab = "Day", ylab = "Total Steps", main = "Number of steps taken each day")
+dev.off()
+summary(stepsByDay$x)[4]
+summary(stepsByDay$x)[3]
+# R: mean = 10770, median = 10760
+
+# What is the average daily activity pattern?
+AvStepsByDay <- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))
+png(filename = "plot2.png",
+    width = 480, height = 480, units = "px")
+plot(AvStepsByDay$Group.1, AvStepsByDay$x, type = "l", xlab = "Interval", ylab = "Average Steps", main = "Average steps pattern")
+dev.off()
+AvStepsByDay$Group.1[AvStepsByDay$x == max(AvStepsByDay$x)]
+# R: In interval 835 is where the maximum average number of steps is reached
+
+# Imputing missing values
+sum(is.na(data$steps))
+MeanStepsByDay <- with(data, aggregate(steps, by = list(interval), FUN = mean, na.rm = TRUE))
+vect <- is.na(data$steps)
+vect2 <- rep(MeanStepsByDay$x, length(vect)/length(MeanStepsByDay$x))
+newData <- cbind(vect2, vect)
+newData <- cbind(data, newData)
+newData$steps[is.na(newData$steps)] <- 0
+newData <- mutate(newData, steps = vect2*vect + steps)
+newData <- newData[c("steps", "date", "interval")]
+newStepsByDay <- with(newData, aggregate(steps, by = list(date), FUN = sum))
+png(filename = "plot3.png",
+    width = 480, height = 480, units = "px")
+barplot(newStepsByDay$x, xlab = "Day", ylab = "Total Steps", main = "Number of steps taken each day")
+dev.off()
+summary(newStepsByDay$x)[4]
+summary(newStepsByDay$x)[3]
+# R: Missing values 2304. mean = 10770, median = 10770. Imputing missing data influenced on the median value
+
+# Are there differences in activity patterns between weekdays and weekends?
+factVar <- as.POSIXlt(as.Date(newData$date))$wday
+factVar[factVar>0 & factVar<6] <- "weekday"
+factVar[factVar != "weekday"] <- "weekend"
+factVar <- as.factor(factVar)
+
+newData2 <- cbind(newData, factVar)
+newData2 <- group_by(newData2, factVar, interval)
+results <- summarise(newData2, step = mean(steps))
+
+p <- qplot(interval, step, data = results, facets = factVar~., geom = "line", main = "Average number of steps taken for week and weekend")
+png(filename = "plot4.png",
+    width = 480, height = 480, units = "px")
+plot(p)
+dev.off()
+
+library(knitr)
+knit2html("PA1_template.Rmd")
